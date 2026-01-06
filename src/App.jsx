@@ -5,7 +5,9 @@ import posterImage from './assets/poster.jpg'
 import Hyperspeed from './Hyperspeed'
 import './App.css'
 
-const COUNTDOWN_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+// 🎯 COUNTDOWN TARGET DATE
+// Poster will be revealed on: January 8, 2026 at 10:30 AM IST
+const TARGET_DATE = new Date(2026, 0, 8, 10, 30, 0); // Month is 0-indexed (0 = January)
 
 function App() {
   const [timeLeft, setTimeLeft] = useState(null);
@@ -29,31 +31,19 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Initialize countdown
-    const storedEndTime = localStorage.getItem('countdownEndTime');
+    // Initialize countdown with fixed target date
     const now = Date.now();
+    const targetTime = TARGET_DATE.getTime();
+    const remaining = targetTime - now;
 
-    if (!storedEndTime) {
-      // First visit - set end time
-      const endTime = now + COUNTDOWN_DURATION;
-      localStorage.setItem('countdownEndTime', endTime.toString());
-      setTimeLeft(COUNTDOWN_DURATION);
+    if (remaining <= 0) {
+      // Countdown already finished
+      setTimeLeft(0);
+      setShowPoster(true);
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 5000);
     } else {
-      // Calculate remaining time
-      const endTime = parseInt(storedEndTime);
-      const remaining = endTime - now;
-
-      if (remaining <= 0) {
-        // Countdown finished
-        setTimeLeft(0);
-        setShowPoster(true);
-        setShowConfetti(true);
-
-        // Stop confetti after 5 seconds
-        setTimeout(() => setShowConfetti(false), 5000);
-      } else {
-        setTimeLeft(remaining);
-      }
+      setTimeLeft(remaining);
     }
   }, []);
 
@@ -61,9 +51,9 @@ function App() {
     if (timeLeft === null || timeLeft <= 0) return;
 
     const interval = setInterval(() => {
-      const storedEndTime = parseInt(localStorage.getItem('countdownEndTime'));
       const now = Date.now();
-      const remaining = storedEndTime - now;
+      const targetTime = TARGET_DATE.getTime();
+      const remaining = targetTime - now;
 
       if (remaining <= 0) {
         setTimeLeft(0);
@@ -79,6 +69,12 @@ function App() {
     return () => clearInterval(interval);
   }, [timeLeft]);
 
+  // 🎯 COUNTDOWN TARGET DATE
+  // Poster will be revealed on: January 8, 2026 at 10:30 AM IST
+  const TARGET_DATE = new Date(2026, 0, 8, 10, 30, 0); // Month is 0-indexed (0 = January)
+
+  // To change the target date, use this format:
+  // new Date(year, month (0-11), day, hour, minute, second)
   const formatTime = (ms) => {
     const totalSeconds = Math.floor(ms / 1000);
     const hours = Math.floor(totalSeconds / 3600);
