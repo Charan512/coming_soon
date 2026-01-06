@@ -109,6 +109,12 @@ function App() {
       <Theme appearance="dark">
         <div className="app">
           <div className="preloader">
+            {/* Red Alert Borders */}
+            <div className="red-alert-border red-alert-top"></div>
+            <div className="red-alert-border red-alert-right"></div>
+            <div className="red-alert-border red-alert-bottom"></div>
+            <div className="red-alert-border red-alert-left"></div>
+
             <div className="preloader-content">
               <ElectricBorder
                 color="#22D3EE"
