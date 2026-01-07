@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Confetti from 'react-confetti'
 import { Theme } from '@radix-ui/themes'
-import posterImage from './assets/poster.jpg'
+// Video file is in public folder, no import needed
 import Hyperspeed from './Hyperspeed'
 import LightRays from './LightRays'
 import ElectricBorder from './ElectricBorder'
@@ -9,16 +9,18 @@ import './App.css'
 import './AnimeLoader.css'
 
 // 🎯 COUNTDOWN TARGET DATE - TESTING
-// Temporarily set to today at 9:37 PM for testing poster reveal
-// REMEMBER TO CHANGE BACK TO: new Date(2026, 0, 8, 10, 30, 0) before pushing to GitHub
-const TARGET_DATE = new Date(2026, 0, 8, 10, 30, 0); // Jan 6, 2026, 9:37 PM
+// Set to a future time for testing (Jan 8, 2026, 1:00 AM)
+const TARGET_DATE = new Date(2026, 0, 8, 10, 30, 0); // Jan 8, 2026, 1:00 AM
 
 function App() {
   const [timeLeft, setTimeLeft] = useState(null);
   const [showPoster, setShowPoster] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showAnimeLoader, setShowAnimeLoader] = useState(false);
+  const [videoEnded, setVideoEnded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [showPlayButton, setShowPlayButton] = useState(false);
+  const videoRef = useRef(null);
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -35,6 +37,23 @@ function App() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Handle video loaded - show play button for user interaction
+  const handleVideoLoaded = () => {
+    if (videoRef.current && !videoEnded) {
+      // Always show play button for better browser compatibility
+      setShowPlayButton(true);
+    }
+  };
+
+  const handlePlayClick = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = false;
+      videoRef.current.volume = 1.0;
+      videoRef.current.play();
+      setShowPlayButton(false);
+    }
+  };
 
   useEffect(() => {
     // Clear any old localStorage data
@@ -242,8 +261,29 @@ function App() {
               ))}
             </div>
           </div>
+        ) : videoEnded ? (
+          // Stage 5: "STAY TUNED" End Screen
+          <div className="stay-tuned-screen">
+            {/* Cyan Corner Glows */}
+            <div className="cyan-glow-border cyan-glow-top"></div>
+            <div className="cyan-glow-border cyan-glow-right"></div>
+            <div className="cyan-glow-border cyan-glow-bottom"></div>
+            <div className="cyan-glow-border cyan-glow-left"></div>
+
+            <div className="stay-tuned-content">
+              <h1 className="stay-tuned-text">STAY TUNED</h1>
+              <p className="stay-tuned-subtitle">We're cooking something special...</p>
+            </div>
+          </div>
         ) : (
+          // Stage 4: Video Reveal
           <div className="poster-reveal">
+            {/* Cyan Corner Glows during video playback */}
+            <div className="cyan-glow-border cyan-glow-top"></div>
+            <div className="cyan-glow-border cyan-glow-right"></div>
+            <div className="cyan-glow-border cyan-glow-bottom"></div>
+            <div className="cyan-glow-border cyan-glow-left"></div>
+
             {/* Light Rays Background Animation */}
             <div style={{ position: 'absolute', width: '100%', height: '100%', top: 0, left: 0 }}>
               <LightRays
@@ -258,14 +298,54 @@ function App() {
               />
             </div>
             <div className="poster-container">
-              <a
-                href="https://prahwalan-26-grsx.vercel.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="poster-link"
+              {showPlayButton && (
+                <div
+                  onClick={handlePlayClick}
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: 1000,
+                    cursor: 'pointer',
+                    background: 'rgba(34, 211, 238, 0.15)',
+                    border: '3px solid #22D3EE',
+                    borderRadius: '50%',
+                    width: '100px',
+                    height: '100px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '50px',
+                    color: '#22D3EE',
+                    backdropFilter: 'blur(15px)',
+                    boxShadow: '0 0 30px rgba(34, 211, 238, 0.5), inset 0 0 20px rgba(34, 211, 238, 0.2)',
+                    transition: 'all 0.3s ease',
+                    animation: 'pulse 2s infinite'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                    e.currentTarget.style.boxShadow = '0 0 50px rgba(34, 211, 238, 0.8), inset 0 0 30px rgba(34, 211, 238, 0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1)';
+                    e.currentTarget.style.boxShadow = '0 0 30px rgba(34, 211, 238, 0.5), inset 0 0 20px rgba(34, 211, 238, 0.2)';
+                  }}
+                >
+                  <span style={{ marginLeft: '8px' }}>▶</span>
+                </div>
+              )}
+              <video
+                ref={videoRef}
+                className="poster-video"
+                loop={false}
+                playsInline
+                onLoadedData={handleVideoLoaded}
+                onEnded={() => setVideoEnded(true)}
               >
-                <img src={posterImage} alt="Event Poster" className="poster-image" />
-              </a>
+                <source src="/teaser.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
             </div>
           </div>
         )}
