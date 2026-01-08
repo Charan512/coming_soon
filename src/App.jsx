@@ -273,6 +273,20 @@ function App() {
             <div className="stay-tuned-content">
               <h1 className="stay-tuned-text">STAY TUNED</h1>
               <p className="stay-tuned-subtitle">We're cooking something special...</p>
+
+              {/* Instagram Button */}
+              <div className="updates-button-container">
+                <p className="updates-subtext">For more updates</p>
+                <a
+                  href="https://www.instagram.com/srkr_ace?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="instagram-button"
+                >
+                  <span className="button-icon">📸</span>
+                  Follow Us
+                </a>
+              </div>
             </div>
           </div>
         ) : (
