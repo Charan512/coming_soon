@@ -10,7 +10,7 @@ import './AnimeLoader.css'
 
 // 🎯 COUNTDOWN TARGET DATE - TESTING
 // Set to a future time for testing (Jan 8, 2026, 1:00 AM)
-const TARGET_DATE = new Date(2026, 0, 8, 10, 30, 0); // Jan 8, 2026, 1:00 AM
+const TARGET_DATE = new Date(2026, 0, 8, 11, 0, 0); // Jan 8, 2026, 1:00 AM
 
 function App() {
   const [timeLeft, setTimeLeft] = useState(null);
